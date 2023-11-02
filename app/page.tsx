@@ -10,10 +10,21 @@ import {
   Sunset, 
   Droplet, 
   Eye,
-  CalendarDays
+  CalendarDays,
+  Fan,
+  CloudDrizzle,
+  CloudRain,
+  CloudSun
 } from'lucide-react';
-import tenDayData from "./tenDayData";
+import {tenDayData, sixDayData} from "./data";
 import React from "react";
+
+const weatherTypeIconMap = {
+  cloudSunRain: <CloudSunRain size={20}/>,
+  cloudDrizzle: <CloudDrizzle size={20}/>,
+  cloudRain: <CloudRain size={20}/>,
+  cloudSun: <CloudSun size={20}/>,
+}
 
 export default function Home() {
   return (
@@ -31,8 +42,12 @@ export default function Home() {
         <div className="aspect-square">
           <HumidityCard/>
         </div>
-        <div className="border bg-green-500 col-span-2 h-[200px]"></div>
-        <div className="border bg-green-500 col-span-2 h-[200px]"></div>
+        <div className="col-span-2">
+          <AirQualityCard value={15}/>
+        </div>
+        <div className="col-span-2">
+          <SixDayAvgCard/>
+        </div>
         <div className="aspect-square">
           <SunsetCard/>
         </div>
@@ -54,15 +69,19 @@ export default function Home() {
             <FeelsLikeCard/>
           </div>
           <div className="aspect-square">
-            <FeelsLikeCard/>
+            <HumidityCard/>
           </div>
-          <div className="border bg-green-500 col-span-2 h-[150px]"></div>
-          <div className="border bg-green-500 col-span-2 h-[150px]"></div>
-          <div className="aspect-square">
-            <FeelsLikeCard/>
+          <div className="col-span-2">
+            <AirQualityCard value={15}/>
+          </div>
+          <div className="col-span-2">
+            <SixDayAvgCard/>
           </div>
           <div className="aspect-square">
-            <FeelsLikeCard/>
+            <SunsetCard/>
+          </div>
+          <div className="aspect-square">
+            <HumidityCard/>
           </div>
         </div>
       </section>
@@ -70,9 +89,53 @@ export default function Home() {
   );
 }
 
+function SixDayAvgCard(){
+  return (
+    <Card>
+      <CardContent className="grid grid-cols-6 pt-6">
+        {sixDayData.map(({date, weatherType, temperature}) => (
+          <div className="flex flex-col items-center gap-6">
+            <span className="text-xs text-neutral-400">{date}</span>
+            {/* @ts-ignore */}
+            <span>{weatherTypeIconMap[weatherType]}</span>
+            <span className="text-xs">{temperature}<sup>&#176;</sup></span>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+function AirQualityCard({value}: {value: number}){
+  return (
+    <Card>
+      <CardHeader>
+        <p className="text-xs text-neutral-400 flex gap-2">
+          <span><Fan size={15}/></span>Air pollution
+        </p>
+      </CardHeader>
+      <CardContent>
+        <div className="relative h-2 rounded-full"
+          style={{
+            background: `linear-gradient(90deg, rgb(61, 116, 169) 0%, rgb(128, 212, 84) 20%, rgb(231, 211, 75) 38%, rgb(228, 77, 99) 59%, rgb(179, 92, 218) 80%, rgb(173, 38, 44) 100%)`
+          }}
+        >
+          <div 
+            className="absolute h-3 w-3 -translate-y-1/2 border-2 border-neutral-900 top-1/2 left-0 bg-neutral-200 rounded-full"
+            style={{left: `${value}%`}}
+          />
+        </div>
+      </CardContent>
+      <CardFooter className="text-[clamp(0.5rem,3vw,0.75rem)]">
+        <p>Air quality is good.</p>
+      </CardFooter>
+    </Card>
+  )
+}
+
 function TenDayTempForecast(){
   return (
-    <Card className="">
+    <Card>
       <CardHeader>
         <p className="text-xs text-neutral-400 flex gap-2">
           <span><CalendarDays size={15}/></span>10-Day Forecast
@@ -88,13 +151,15 @@ function TenDayTempForecast(){
 }
 
 interface TenDayTempForecastItemProps extends TempRangeBarProps {
-  day: string
+  day: string,
+  weatherType: string
 }
-TenDayTempForecast.Item = ({day, ...rest}: TenDayTempForecastItemProps) => {
+TenDayTempForecast.Item = ({day, weatherType, ...rest}: TenDayTempForecastItemProps) => {
   return (
     <div className="grid grid-cols-[3fr_2fr_6fr] items-center text-sm py-3 border-b border-neutral-700 last:border-b-0">
       <span>{day}</span>
-      <span><CloudSunRain size={15}/></span>
+      {/* @ts-ignore */}
+      <span>{weatherTypeIconMap[weatherType]}</span>
       <span>
         <TempRangeBar {...rest} />
       </span>
