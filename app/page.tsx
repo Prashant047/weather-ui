@@ -4,7 +4,15 @@ import {
   CardContent,
   CardFooter
 } from "@/components/ui/Card";
-import { Thermometer, CloudSunRain, Sunset, Droplet, Eye } from 'lucide-react';
+import { 
+  Thermometer, 
+  CloudSunRain, 
+  Sunset, 
+  Droplet, 
+  Eye,
+  CalendarDays
+} from'lucide-react';
+import tenDayData from "./tenDayData";
 import React from "react";
 
 export default function Home() {
@@ -14,7 +22,9 @@ export default function Home() {
         <div className="aspect-square col-span-2">
           <CurrentWeatherCard/>
         </div>
-        <div className="border bg-blue-500 h-[500px] col-span-2"></div>
+        <div className="col-span-2">
+          <TenDayTempForecast/>
+        </div>
         <div className="aspect-square">
           <FeelsLikeCard/>
         </div>
@@ -35,8 +45,9 @@ export default function Home() {
           <div className="aspect-square">
             <CurrentWeatherCard/>
           </div>
-          <div className="border bg-blue-500 h-[500px]"></div>
-          <div className="border bg-red-500 h-[300px]"></div>
+          <div className="">
+            <TenDayTempForecast/>
+          </div>
         </div>
         <div className="grid grid-cols-2 content-start gap-2">
           <div className="aspect-square">
@@ -53,20 +64,43 @@ export default function Home() {
           <div className="aspect-square">
             <FeelsLikeCard/>
           </div>
-          <div className="aspect-square">
-            <FeelsLikeCard/>
-          </div>
-          <div className="aspect-square">
-            <FeelsLikeCard/>
-          </div>
-          <div className="aspect-square">
-            <FeelsLikeCard/>
-          </div>
         </div>
       </section>
     </main>
   );
 }
+
+function TenDayTempForecast(){
+  return (
+    <Card className="">
+      <CardHeader>
+        <p className="text-xs text-neutral-400 flex gap-2">
+          <span><CalendarDays size={15}/></span>10-Day Forecast
+        </p>
+      </CardHeader>
+      <CardContent className="flex flex-col">
+        {tenDayData.map((data: TenDayTempForecastItemProps) => (
+          <TenDayTempForecast.Item {...data}/>
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+interface TenDayTempForecastItemProps extends TempRangeBarProps {
+  day: string
+}
+TenDayTempForecast.Item = ({day, ...rest}: TenDayTempForecastItemProps) => {
+  return (
+    <div className="grid grid-cols-[3fr_2fr_6fr] items-center text-sm py-3 border-b border-neutral-700 last:border-b-0">
+      <span>{day}</span>
+      <span><CloudSunRain size={15}/></span>
+      <span>
+        <TempRangeBar {...rest} />
+      </span>
+    </div>
+  )
+};
 
 const FeelsLikeCard = () => (
   <AtomicInfoCard
@@ -183,7 +217,7 @@ function TempRangeBar({
   const width = right - left;
 
   return (
-  <div className="flex gap-2 items-center w-52 text-xs font-bold ">
+  <div className="flex gap-2 items-center w-full text-xs font-bold ">
     <span className="text-neutral-500">{dayMin} <sup>&#176;</sup></span>
     <div className="flex-1 bg-neutral-800 h-1.5 relative rounded-full">
       <div 
